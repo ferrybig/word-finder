@@ -121,7 +121,7 @@ export function findWords(
 		(word, path) => {
 			const res = foundWords.get(word);
 			if (!res) {
-				foundWords.set(word, []);
+				foundWords.set(word, [path]);
 			} else {
 				res.push(path);
 			}
