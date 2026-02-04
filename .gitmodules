@@ -1,3 +1,6 @@
 [submodule "opentaal-wordlist"]
 	path = opentaal-wordlist
 	url = https://github.com/OpenTaal/opentaal-wordlist.git
+[submodule "10_000-most-used-words-in-Dutch"]
+	path = 10_000-most-used-words-in-Dutch
+	url = https://github.com/Fonzie-byte/10_000-most-used-words-in-Dutch.git
