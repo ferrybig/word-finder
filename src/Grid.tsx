@@ -1,12 +1,14 @@
+import { GRID_SIZE } from "./constants";
+
 interface VisualizePathSection {
 	start: number;
 	end: number;
 }
 function VisualizePathSection({ start, end }: VisualizePathSection) {
-	const startX = start % 4;
-	const startY = Math.floor(start / 4);
-	const endX = end % 4;
-	const endY = Math.floor(end / 4);
+	const startX = start % GRID_SIZE;
+	const startY = Math.floor(start / GRID_SIZE);
+	const endX = end % GRID_SIZE;
+	const endY = Math.floor(end / GRID_SIZE);
 	return (
 		<line
 			x1={`${startX * 100 + 50}`}
@@ -21,8 +23,8 @@ interface VisualizePathHead {
 	index: number;
 }
 function VisualizePathHead({ index }: VisualizePathHead) {
-	const x = index % 4;
-	const y = Math.floor(index / 4);
+	const x = index % GRID_SIZE;
+	const y = Math.floor(index / GRID_SIZE);
 	return (
 		<circle
 			cx={`${x * 100 + 50}`}
@@ -38,8 +40,8 @@ interface VisualizePath {
 function VisualizePath({ path }: VisualizePath) {
 	return (
 		<svg
-			style={{ gridArea: "1 / 1 / span 4 / span 4", pointerEvents: "none" }}
-			viewBox="0 0 400 400"
+			style={{ gridArea: `1 / 1 / span ${GRID_SIZE} / span ${GRID_SIZE}`, pointerEvents: "none" }}
+			viewBox={`0 0 ${GRID_SIZE * 100} ${GRID_SIZE * 100}`}
 		>
 			{path.map((tile, index) =>
 				index === 0 ? (
@@ -60,13 +62,13 @@ export interface Grid {
 
 export function Grid({ items, dispatch, visualizedPath }: Grid) {
 	return (
-		<div className="grid">
-			{Array.from({ length: 16 }).map((_, i) => (
+		<div className="grid" style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, 50px)`, gridTemplateRows: `repeat(${GRID_SIZE}, 50px)` }}>
+			{Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, i) => (
 				<input
 					key={i}
 					className="tile"
 					style={{
-						gridArea: `${Math.floor(i / 4) + 1} / ${(i % 4) + 1} / span 1 / span 1`,
+						gridArea: `${Math.floor(i / GRID_SIZE) + 1} / ${(i % GRID_SIZE) + 1} / span 1 / span 1`,
 					}}
 					type="text"
 					maxLength={2}

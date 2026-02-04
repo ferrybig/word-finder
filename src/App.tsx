@@ -1,8 +1,10 @@
 import "./App.css";
 import { useDeferredValue, useMemo, useReducer, useState } from "react";
 import compiledWords from "./compiled-words.json" with { type: "json" };
+import { GRID_SIZE } from "./constants";
 import { Grid } from "./Grid";
 import { connections } from "./gridConnections";
+import { makeGoodRandomGrid, makeRandomGrid } from "./makeRandomGrid";
 import { findWords } from "./word-find";
 
 interface Path {
@@ -62,7 +64,10 @@ function reducer(
 			);
 		}
 		case "set-all": {
-			return (`${action.value}                `).substring(0, 16);
+			return `${action.value}${" ".repeat(GRID_SIZE * GRID_SIZE)}`.substring(
+				0,
+				GRID_SIZE * GRID_SIZE,
+			);
 		}
 		default:
 			return state;
@@ -70,7 +75,12 @@ function reducer(
 }
 
 function App() {
-	const [state, dispatch] = useReducer(reducer, "abcdefghijklmnop");
+	const [state, dispatch] = useReducer(
+		reducer,
+		"abcdefghijklmnopqrstuvwxyz"
+			.repeat(Math.ceil((GRID_SIZE * GRID_SIZE) / 26))
+			.substring(0, GRID_SIZE * GRID_SIZE),
+	);
 	const [visualizedPath, setVisualizedPath] = useState<number[] | null>(null);
 	const deferredState = useDeferredValue(state);
 	const words = useMemo(
@@ -88,16 +98,27 @@ function App() {
 			<button
 				type="button"
 				onClick={() => {
-					const letters = "abcdefghijklmnopqrstuvwxyz";
-					let randomTiles = "";
-					for (let i = 0; i < 16; i++) {
-						const randomIndex = Math.floor(Math.random() * letters.length);
-						randomTiles += letters.charAt(randomIndex);
-					}
-					dispatch({ type: "set-all", value: randomTiles });
+					dispatch({
+						type: "set-all",
+						value: makeRandomGrid(GRID_SIZE * GRID_SIZE),
+					});
 				}}
 			>
 				Randomize
+			</button>
+			<button
+				type="button"
+				onClick={() => {
+					dispatch({
+						type: "set-all",
+						value: makeGoodRandomGrid(GRID_SIZE * GRID_SIZE, {
+							connections,
+							dict: compiledWords as string[],
+						}),
+					});
+				}}
+			>
+				Generate a good random grid
 			</button>
 			<p>Found {words.length} words:</p>
 			<ul>
