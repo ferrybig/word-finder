@@ -1,10 +1,11 @@
 import "./App.css";
 import { useDeferredValue, useMemo, useReducer, useState } from "react";
-import compiledWords from "./compiled-words.json" with { type: "json" };
-import { GRID_SIZE } from "./constants";
+import { dictionary, GRID_SIZE } from "./constants";
 import { Grid } from "./Grid";
 import { connections } from "./gridConnections";
 import { makeGoodRandomGrid, makeRandomGrid } from "./makeRandomGrid";
+import { scoreGrid } from "./score";
+import { generateUsedCounts } from "./usedCounts";
 import { findWords } from "./word-find";
 
 interface Path {
@@ -84,17 +85,22 @@ function App() {
 	const [visualizedPath, setVisualizedPath] = useState<number[] | null>(null);
 	const deferredState = useDeferredValue(state);
 	const words = useMemo(
-		() =>
-			findWords(
-				connections,
-				deferredState.split(""),
-				compiledWords as string[],
-			),
+		() => findWords(connections, deferredState, dictionary),
 		[deferredState],
 	);
+	const score = useMemo(
+		() => scoreGrid(words, deferredState),
+		[deferredState, words],
+	);
+	const used = useMemo(() => generateUsedCounts(words), [words]);
 	return (
 		<>
-			<Grid items={state} dispatch={dispatch} visualizedPath={visualizedPath} />
+			<Grid
+				items={state}
+				dispatch={dispatch}
+				visualizedPath={visualizedPath}
+				used={used}
+			/>
 			<button
 				type="button"
 				onClick={() => {
@@ -113,13 +119,14 @@ function App() {
 						type: "set-all",
 						value: makeGoodRandomGrid(GRID_SIZE * GRID_SIZE, {
 							connections,
-							dict: compiledWords as string[],
+							dict: dictionary,
 						}),
 					});
 				}}
 			>
 				Generate a good random grid
 			</button>
+			<p>Score: {score}</p>
 			<p>Found {words.length} words:</p>
 			<ul>
 				{words.map((wordObj) => (

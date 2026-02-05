@@ -5,7 +5,7 @@ export interface FoundWord {
 
 function findWordRecursively(
 	connections: number[][],
-	data: string[],
+	grid: string,
 	// Sorted dictionary
 	dict: string[],
 	// Minium index in dict to consider
@@ -27,7 +27,7 @@ function findWordRecursively(
 		}
 		try {
 			currentPath.push(connection);
-			const currentWord = currentPath.map((i) => data[i]).join("");
+			const currentWord = currentPath.map((i) => grid[i]).join("");
 			//console.log('Exploring', currentWord, 'path:', currentPath.join(' → '));
 
 			let newDictMin = dictMin;
@@ -87,7 +87,7 @@ function findWordRecursively(
 			// Continue searching
 			findWordRecursively(
 				connections,
-				data,
+				grid,
 				dict,
 				newDictMin,
 				newDictMax,
@@ -104,20 +104,20 @@ function findWordRecursively(
 
 export function findWords(
 	connections: number[][],
-	data: string[],
+	grid: string,
 	dict: string[],
 ): FoundWord[] {
-	console.time("findWords");
+	//console.time("findWords");
 	const foundWords: Map<string, number[][]> = new Map();
-	const indexesOfData = data.map((_, i) => i);
+	const indexesOfGrid = grid.split("").map((_, i) => i);
 	findWordRecursively(
 		connections,
-		data,
+		grid,
 		dict,
 		0,
 		dict.length - 1,
 		[],
-		indexesOfData,
+		indexesOfGrid,
 		(word, path) => {
 			const res = foundWords.get(word);
 			if (!res) {
@@ -131,6 +131,6 @@ export function findWords(
 		word,
 		paths,
 	}));
-	console.timeEnd("findWords");
+	//console.timeEnd("findWords");
 	return res;
 }
