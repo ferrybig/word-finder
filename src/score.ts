@@ -1,4 +1,4 @@
-import { KLINKERS_MAX } from "./constants";
+import { KLINKERS_MAX, LENGTH_FACTOR } from "./constants";
 import type { FoundWord } from "./word-find";
 
 export function scoreGrid(
@@ -27,7 +27,7 @@ export function scoreGrid(
 		for (const p of entry.paths[0]) {
 			usedTiles[p] += 1 / entry.paths.length;
 		}
-		score += 2 ** entry.word.length;
+		score += LENGTH_FACTOR ** entry.word.length;
 	}
 	// Tiles that barely get used score lower
 	const lowestUsage = Math.max(0.1, Math.min(...usedTiles));
